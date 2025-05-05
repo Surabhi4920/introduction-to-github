@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Share Your Location</title>
+</head>
+<body>
+  <h2>Click below to share your location</h2>
+  <button onclick="getLocation()">Send My Location</button>
+  <p id="status"></p>
+
+  <script>
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(sendLocation, showError);
+      } else {
+        document.getElementById("status").innerText = "Geolocation not supported.";
+      }
+    }
+
+    function sendLocation(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      document.getElementById("status").innerHTML = 
+        `Latitude: ${lat}<br>Longitude: ${lon}`;
+
+      // You can now send this data to your server or email service
+      // Example: send to a webhook or Google Sheets using fetch()
+
+      fetch("https://your-backend-url.com/store-location", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ latitude: lat, longitude: lon })
+      });
+    }
+
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          alert("Permission denied. Please allow location access.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("Location unavailable.");
+          break;
+        case error.TIMEOUT:
+          alert("Request timed out.");
+          break;
+        default:
+          alert("An unknown error occurred.");
+      }
+    }
+  </script>
+</body>
+</html>
